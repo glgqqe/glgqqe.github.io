@@ -3,8 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>глг типа</title>
+  <title>глг типа — Material 3</title>
+
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <!-- Minecraft Font -->
+  <link href="https://fonts.cdnfonts.com/css/minecraft-4" rel="stylesheet" />
+
+  <!-- Material Web Components -->
+  <script type="module" src="https://unpkg.com/@material/web/all.js?module"></script>
+
   <style>
     :root {
       --color-bg: #fafafa;
@@ -14,6 +24,20 @@
       --color-accent: #2962ff;
       --color-danger: #d32f2f;
       --color-surface: #ffffff;
+
+      accent-color: var(--color-accent);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg: #121212;
+        --color-text: #ffffff;
+        --color-secondary: #aaaaaa;
+        --color-border: #333;
+        --color-accent: #82b1ff;
+        --color-danger: #ef5350;
+        --color-surface: #1e1e1e;
+      }
     }
 
     body {
@@ -24,6 +48,7 @@
       padding: 40px 20px;
       max-width: 860px;
       margin-inline: auto;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     header {
@@ -41,19 +66,6 @@
     .subtitle {
       color: var(--color-secondary);
       font-size: 1rem;
-    }
-
-    .theme-toggle {
-      padding: 6px 12px;
-      border-radius: 8px;
-      background-color: var(--color-surface);
-      border: 1px solid var(--color-border);
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
-    .theme-toggle:hover {
-      background-color: #f0f0f0;
     }
 
     section {
@@ -102,6 +114,7 @@
 
     .mc-info {
       flex-grow: 1;
+      font-family: 'Minecraft', monospace;
     }
 
     .mc-motd {
@@ -118,6 +131,7 @@
       font-size: 0.9rem;
       text-align: right;
       white-space: nowrap;
+      font-family: 'Minecraft', monospace;
     }
 
     footer {
@@ -136,7 +150,7 @@
       <p class="subtitle">aka glgqqe, glgshka, eliteglg (old)</p>
       <p class="subtitle">ноунейм, сервера майнкрафт и щитпосты</p>
     </div>
-    <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
+    <mwc-icon-button icon="dark_mode" id="themeToggle" aria-label="Переключить тему"></mwc-icon-button>
   </header>
 
   <section>
@@ -158,12 +172,9 @@
       <div class="mc-status" id="status">⌛</div>
     </div>
   </section>
-
+  
   <script>
-    function toggleTheme() {
-      document.body.classList.toggle('dark');
-    }
-
+    // Серверный статус
     window.addEventListener('DOMContentLoaded', () => {
       fetch('https://api.mcsrvstat.us/2/mirumir.xyz')
         .then(res => res.json())
@@ -184,6 +195,12 @@
         .catch(() => {
           document.getElementById('motd').innerText = '⚠️ Ошибка загрузки';
         });
+    });
+
+    // Тема (переключение вручную)
+    const toggle = document.getElementById('themeToggle');
+    toggle.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark-theme');
     });
   </script>
 
