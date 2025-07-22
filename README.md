@@ -1,2 +1,2 @@
-# glgqqe.github.
+# glgqqe.github.io
 Personal glg site tipa
