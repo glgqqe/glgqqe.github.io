@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>глг типа</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Press+Start+2P&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-color: #f9f9f9;
@@ -12,18 +12,6 @@
       --subtext-color: #555;
       --border-color: #ddd;
       --link-color: #0066cc;
-      --accent-bg: rgba(0, 0, 0, 0.03);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-color: #121212;
-        --text-color: #eee;
-        --subtext-color: #aaa;
-        --border-color: #333;
-        --link-color: #66ccff;
-        --accent-bg: rgba(255, 255, 255, 0.05);
-      }
     }
 
     body.dark {
@@ -32,13 +20,14 @@
       --subtext-color: #aaa;
       --border-color: #333;
       --link-color: #66ccff;
-      --accent-bg: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(2px) brightness(90%);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
 
     body {
@@ -46,19 +35,15 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       padding: 40px 20px;
-      max-width: 820px;
+      max-width: 800px;
       margin: auto;
-      line-height: 1.6;
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     header {
       margin-bottom: 60px;
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 20px;
+      align-items: center;
     }
 
     h1 {
@@ -67,23 +52,20 @@
     }
 
     p.subtitle {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       color: var(--subtext-color);
     }
 
     section {
       margin-bottom: 50px;
-      padding: 24px;
-      border-radius: 12px;
-      background-color: var(--accent-bg);
-      border: 1px solid var(--border-color);
       opacity: 0;
       transform: translateY(20px);
       animation: fadeInUp 0.6s forwards;
     }
 
-    section:nth-of-type(1) { animation-delay: 0.1s; }
-    section:nth-of-type(2) { animation-delay: 0.2s; }
+    section:nth-of-type(2) { animation-delay: 0.1s; }
+    section:nth-of-type(3) { animation-delay: 0.2s; }
+    section:nth-of-type(4) { animation-delay: 0.3s; }
 
     @keyframes fadeInUp {
       to {
@@ -94,13 +76,39 @@
 
     h2 {
       font-size: 1.5rem;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       border-bottom: 2px solid var(--border-color);
-      padding-bottom: 6px;
+      padding-bottom: 10px;
     }
 
-    p {
-      margin-bottom: 10px;
+    .project {
+      margin-bottom: 20px;
+    }
+
+    .project h3 {
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+
+    .project p {
+      color: var(--subtext-color);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--subtext-color);
+      margin-top: 60px;
+    }
+
+    a {
+      color: var(--link-color);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
 
     .theme-toggle {
@@ -108,40 +116,56 @@
       border: 1px solid var(--border-color);
       color: var(--text-color);
       padding: 6px 12px;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 1rem;
-      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
     }
 
     .theme-toggle:hover {
       background-color: var(--border-color);
     }
 
-    a {
-      color: var(--link-color);
-      text-decoration: none;
-      border-bottom: 1px dashed transparent;
-      transition: all 0.2s ease;
+    /* 🧱 Minecraft-style section */
+    .minecraft-style {
+      font-family: 'Press Start 2P', monospace;
+      background-color: #1b1b1b;
+      border: 2px solid #3a3a3a;
+      box-shadow: inset 0 0 0 2px #888;
+      color: #cfcfcf;
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 50px;
+      animation: fadeInUp 0.6s forwards;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    a:hover {
-      border-bottom: 1px dashed var(--link-color);
+    .minecraft-style:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     }
 
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 2rem;
-      }
+    .minecraft-style h2 {
+      color: #fff;
+      text-shadow: 2px 2px 0 #000;
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
 
-      .theme-toggle {
-        font-size: 0.9rem;
-        padding: 5px 10px;
-      }
+    .minecraft-style p {
+      font-size: 0.75rem;
+      margin-bottom: 12px;
+      color: #b8b8b8;
+    }
 
-      section {
-        padding: 16px;
-      }
+    .status-box {
+      font-size: 0.75rem;
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #111;
+      border: 1px solid #444;
+      border-radius: 6px;
+      color: #eee;
     }
   </style>
 </head>
@@ -157,20 +181,26 @@
   </header>
 
   <section>
-    <h2>ссылочке</h2>
+    <h2>🔗 Ссылочке</h2>
     <p>Telegram: <a href="https://t.me/glgvvv">channel</a></p>
     <p>Discord: <a href="https://discord.gg/fmx7uFhjaW" target="_blank">server</a></p>
     <p>Steam: <a href="https://steamcommunity.com/id/glgqqe/" target="_blank">link</a></p>
-    <p>Spotify: <a href="https://open.spotify.com/user/l49kd0b9986ihyz7fhkav7132?si=ba9b36cc8b854499" target="_blank">link</a></p>
+    <p>Spotify: <a href="https://open.spotify.com/user/l49kd0b9986ihyz7fhkav7132" target="_blank">link</a></p>
   </section>
 
-  <section>
-    <h2>сервер</h2>
+  <section class="minecraft-style">
+    <h2>🗺️ СЕРВЕР</h2>
     <p>IP: mirumir.xyz</p>
     <p>Map: <a href="http://map.mirumir.xyz">link</a></p>
     <p>Wiki: <a href="https://mirumir.gitbook.io/mirumir">link</a></p>
     <p>Discord: <a href="https://discord.gg/qwguraexUX" target="_blank">server</a></p>
+
+    <div id="status" class="status-box">🔄 Проверка статуса сервера...</div>
   </section>
+
+  <footer>
+    <p>© glg типа. Все права как бы защищены.</p>
+  </footer>
 
   <script>
     function toggleTheme() {
@@ -178,12 +208,25 @@
       localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
     }
 
-    // Автозагрузка темы
     window.addEventListener('DOMContentLoaded', () => {
-      const saved = localStorage.getItem('theme');
-      if (saved === 'dark') {
+      if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark');
       }
+
+      // 🎮 Проверка статуса сервера
+      fetch('https://api.mcsrvstat.us/2/mirumir.xyz')
+        .then(res => res.json())
+        .then(data => {
+          const statusBox = document.getElementById('status');
+          if (data.online) {
+            statusBox.innerHTML = `✅ Онлайн: ${data.players.online} из ${data.players.max}`;
+          } else {
+            statusBox.innerHTML = '❌ Сервер оффлайн';
+          }
+        })
+        .catch(err => {
+          document.getElementById('status').innerText = '⚠️ Не удалось получить статус.';
+        });
     });
   </script>
 
