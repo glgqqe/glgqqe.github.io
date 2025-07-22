@@ -3,142 +3,154 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>глг типа — Material 3</title>
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
-  <!-- Minecraft Font -->
-  <link href="https://fonts.cdnfonts.com/css/minecraft-4" rel="stylesheet" />
-
-  <!-- Material Web Components -->
-  <script type="module" src="https://unpkg.com/@material/web/all.js?module"></script>
-
+  <title>глг типа</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --color-bg: #fafafa;
-      --color-text: #1b1b1b;
-      --color-secondary: #5f6368;
-      --color-border: #e0e0e0;
-      --color-accent: #2962ff;
-      --color-danger: #d32f2f;
-      --color-surface: #ffffff;
-
-      accent-color: var(--color-accent);
+      --bg-color: #f9f9f9;
+      --text-color: #222;
+      --subtext-color: #555;
+      --border-color: #ddd;
+      --link-color: #0066cc;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --color-bg: #121212;
-        --color-text: #ffffff;
-        --color-secondary: #aaaaaa;
-        --color-border: #333;
-        --color-accent: #82b1ff;
-        --color-danger: #ef5350;
-        --color-surface: #1e1e1e;
-      }
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #eee;
+      --subtext-color: #aaa;
+      --border-color: #333;
+      --link-color: #66ccff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
 
     body {
-      font-family: 'Roboto', sans-serif;
-      background-color: var(--color-bg);
-      color: var(--color-text);
-      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       padding: 40px 20px;
-      max-width: 860px;
-      margin-inline: auto;
-      transition: background-color 0.3s, color 0.3s;
+      max-width: 800px;
+      margin: auto;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     header {
-      margin-bottom: 48px;
+      margin-bottom: 60px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     h1 {
-      font-size: 2.25rem;
-      margin-bottom: 6px;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
     }
 
-    .subtitle {
-      color: var(--color-secondary);
-      font-size: 1rem;
+    p.subtitle {
+      font-size: 1.1rem;
+      color: var(--subtext-color);
     }
 
     section {
-      margin-bottom: 40px;
-      padding: 24px;
-      background-color: var(--color-surface);
+      margin-bottom: 50px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s forwards;
+      background-color: transparent;
       border-radius: 12px;
-      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      padding: 20px;
+      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     }
 
+    section:nth-of-type(2) { animation-delay: 0.1s; }
+    section:nth-of-type(3) { animation-delay: 0.2s; }
+    section:nth-of-type(4) { animation-delay: 0.3s; }
+
     section:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      transform: translateY(10px);
+      background-color: rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    body.dark section:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     h2 {
       font-size: 1.5rem;
-      margin-bottom: 16px;
-      border-bottom: 2px solid var(--color-border);
-      padding-bottom: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .project {
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .project h3 {
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+
+    .project p {
+      color: var(--subtext-color);
+    }
+
+    .project:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+      transform: translateY(-4px);
+    }
+
+    body.dark .project:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--subtext-color);
+      margin-top: 60px;
     }
 
     a {
-      color: var(--color-accent);
+      color: var(--link-color);
       text-decoration: none;
+      transition: color 0.2s;
     }
 
     a:hover {
       text-decoration: underline;
     }
 
-    .mc-server {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .mc-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
-      background-color: #ddd;
-      flex-shrink: 0;
-    }
-
-    .mc-info {
-      flex-grow: 1;
-      font-family: 'Minecraft', monospace;
-    }
-
-    .mc-motd {
-      font-size: 1rem;
-      margin-bottom: 6px;
-    }
-
-    .mc-ip {
+    .theme-toggle {
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
       font-size: 0.9rem;
-      color: var(--color-secondary);
+      transition: all 0.3s ease;
     }
 
-    .mc-status {
-      font-size: 0.9rem;
-      text-align: right;
-      white-space: nowrap;
-      font-family: 'Minecraft', monospace;
-    }
-
-    footer {
-      text-align: center;
-      color: var(--color-secondary);
-      font-size: 0.9rem;
-      margin-top: 60px;
+    .theme-toggle:hover {
+      background-color: var(--border-color);
     }
   </style>
 </head>
@@ -146,15 +158,15 @@
 
   <header>
     <div>
-      <h1>глг / glg</h1>
+      <h1>glg</h1>
       <p class="subtitle">aka glgqqe, glgshka, eliteglg (old)</p>
       <p class="subtitle">ноунейм, сервера майнкрафт и щитпосты</p>
     </div>
-    <mwc-icon-button icon="dark_mode" id="themeToggle" aria-label="Переключить тему"></mwc-icon-button>
+    <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
   </header>
 
   <section>
-    <h2>🧭 ссылочке</h2>
+    <h2>ссылочке</h2>
     <p>Telegram: <a href="https://t.me/glgvvv">channel</a></p>
     <p>Discord: <a href="https://discord.gg/fmx7uFhjaW" target="_blank">server</a></p>
     <p>Steam: <a href="https://steamcommunity.com/id/glgqqe/" target="_blank">link</a></p>
@@ -162,45 +174,24 @@
   </section>
 
   <section>
-    <h2>🌐 сервер</h2>
-    <div class="mc-server">
-      <img src="" alt="Icon" class="mc-icon" id="serverIcon">
-      <div class="mc-info">
-        <div class="mc-motd" id="motd">🔄 Загрузка MOTD...</div>
-        <div class="mc-ip">IP: <strong>mirumir.xyz</strong></div>
-      </div>
-      <div class="mc-status" id="status">⌛</div>
-    </div>
+    <h2>сервер</h2>
+    <p>IP: mirumir.xyz</p>
+    <p>Map: <a href="http://map.mirumir.xyz">link</a></p>
+    <p>Wiki: <a href="https://mirumir.gitbook.io/mirumir">link</a></p>
+    <p>Discord: <a href="https://discord.gg/qwguraexUX" target="_blank">server</a></p>
   </section>
-  
+
   <script>
-    // Серверный статус
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    // Автозагрузка темы
     window.addEventListener('DOMContentLoaded', () => {
-      fetch('https://api.mcsrvstat.us/2/mirumir.xyz')
-        .then(res => res.json())
-        .then(data => {
-          const icon = document.getElementById('serverIcon');
-          const motd = document.getElementById('motd');
-          const status = document.getElementById('status');
-
-          if (data.online) {
-            icon.src = data.icon || 'https://mc-heads.net/avatar/Steve/64';
-            motd.innerHTML = data.motd?.clean?.join('<br>') || '✅ Онлайн';
-            status.innerHTML = `👥 ${data.players.online} / ${data.players.max}`;
-          } else {
-            motd.innerHTML = '<span style="color: var(--color-danger)">❌ Сервер оффлайн</span>';
-            status.innerText = '';
-          }
-        })
-        .catch(() => {
-          document.getElementById('motd').innerText = '⚠️ Ошибка загрузки';
-        });
-    });
-
-    // Тема (переключение вручную)
-    const toggle = document.getElementById('themeToggle');
-    toggle.addEventListener('click', () => {
-      const isDark = document.documentElement.classList.toggle('dark-theme');
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+      }
     });
   </script>
 
