@@ -1,0 +1,188 @@
+---
+layout: default
+title: Файлы для скачивания
+---
+
+<style>
+    :root {
+        --bg-color: #f5f5f5;
+        --text-color: #333;
+        --header-color: #2c3e50;
+        --link-color: #3498db;
+        --section-bg: #ffffff;
+        --footer-color: #7f8c8d;
+    }
+
+    .dark-mode {
+        --bg-color: #1a1a1a;
+        --text-color: #e0e0e0;
+        --header-color: #4a90e2;
+        --link-color: #5eb0ff;
+        --section-bg: #2d2d2d;
+        --footer-color: #a0a0a0;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        max-width: 800px;
+        margin: auto;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        transition: all 0.3s ease;
+    }
+
+    h1 {
+        color: var(--header-color);
+        text-align: center;
+    }
+
+    .file-list {
+        margin: 30px 0;
+    }
+
+    .file-item {
+        padding: 10px 15px;
+        margin: 5px 0;
+        background-color: var(--section-bg);
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .file-item a {
+        color: var(--link-color);
+        text-decoration: none;
+    }
+
+    .file-item a:hover {
+        text-decoration: underline;
+    }
+
+    .file-icon {
+        margin-right: 10px;
+    }
+
+    .download-btn {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .download-all {
+        display: block;
+        width: 200px;
+        margin: 20px auto;
+        padding: 10px 15px;
+        background-color: #2196F3;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .download-all:hover {
+        background-color: #0b7dda;
+    }
+
+    .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--section-bg);
+        border: none;
+        padding: 8px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<button class="theme-toggle" onclick="toggleTheme()">
+    <i class="fas fa-moon"></i> Тёмная тема
+</button>
+
+<h1>Файлы для скачивания</h1>
+
+<div class="file-list">
+    {% assign sorted_files = site.static_files | sort: 'name' %}
+    {% for file in sorted_files %}
+        {% if file.path contains '/files/' %}
+            <div class="file-item">
+                <div>
+                    {% if file.extname == '.pdf' %}
+                        <i class="fas fa-file-pdf file-icon" style="color: #e74c3c;"></i>
+                    {% elsif file.extname == '.zip' or file.extname == '.rar' %}
+                        <i class="fas fa-file-archive file-icon" style="color: #f39c12;"></i>
+                    {% elsif file.extname == '.doc' or file.extname == '.docx' %}
+                        <i class="fas fa-file-word file-icon" style="color: #3498db;"></i>
+                    {% elsif file.extname == '.xls' or file.extname == '.xlsx' %}
+                        <i class="fas fa-file-excel file-icon" style="color: #2ecc71;"></i>
+                    {% else %}
+                        <i class="fas fa-file file-icon"></i>
+                    {% endif %}
+                    <a href="{{ file.path }}">{{ file.name }}</a>
+                </div>
+                <button class="download-btn" onclick="window.location.href='{{ file.path }}'">
+                    <i class="fas fa-download"></i> Скачать
+                </button>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<a href="#" class="download-all" id="downloadAll">
+    <i class="fas fa-download"></i> Скачать все файлы
+</a>
+
+<script>
+    // Проверяем сохранённую тему
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+        updateThemeButton();
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            localStorage.setItem('darkMode', 'disabled');
+        }
+        updateThemeButton();
+    }
+
+    function updateThemeButton() {
+        const button = document.querySelector('.theme-toggle');
+        if (document.body.classList.contains('dark-mode')) {
+            button.innerHTML = '<i class="fas fa-sun"></i> Светлая тема';
+        } else {
+            button.innerHTML = '<i class="fas fa-moon"></i> Тёмная тема';
+        }
+    }
+
+    // Скачать все файлы
+    document.getElementById('downloadAll').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        {% assign zip_files = site.static_files | where_exp: "file", "file.path contains '/files/'" %}
+        {% if zip_files.size > 0 %}
+            // Если есть файлы, скачиваем первый ZIP (или создаём ссылку на архив)
+            // В реальной реализации нужно создать ZIP архив со всеми файлами
+            alert('В реальной реализации здесь будет скачивание ZIP-архива со всеми файлами.\nСейчас можно скачать файлы по отдельности.');
+        {% else %}
+            alert('Нет файлов для скачивания');
+        {% endif %}
+    });
+</script>
