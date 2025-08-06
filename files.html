@@ -1,339 +1,70 @@
----
-layout: default
-title: Файлы для скачивания
----
-
-<style>
-    :root {
-        --bg-color: #f5f5f5;
-        --text-color: #333;
-        --header-color: #2c3e50;
-        --link-color: #3498db;
-        --section-bg: #ffffff;
-        --footer-color: #7f8c8d;
-    }
-
-    .dark-mode {
-        --bg-color: #1a1a1a;
-        --text-color: #e0e0e0;
-        --header-color: #4a90e2;
-        --link-color: #5eb0ff;
-        --section-bg: #2d2d2d;
-        --footer-color: #a0a0a0;
-    }
-
-    body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 20px;
-        max-width: 1000px;
-        margin: auto;
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        transition: all 0.3s ease;
-    }
-
-    h1 {
-        color: var(--header-color);
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .breadcrumbs {
-        margin-bottom: 20px;
-        padding: 10px;
-        background-color: var(--section-bg);
-        border-radius: 4px;
-    }
-
-    .breadcrumbs a {
-        color: var(--link-color);
-        text-decoration: none;
-    }
-
-    .breadcrumbs a:hover {
-        text-decoration: underline;
-    }
-
-    .file-actions {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-    .folder-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 15px;
-        margin-bottom: 30px;
-    }
-
-    .folder-item {
-        padding: 15px;
-        background-color: var(--section-bg);
-        border-radius: 4px;
-        transition: transform 0.2s;
-    }
-
-    .folder-item:hover {
-        transform: translateY(-3px);
-    }
-
-    .folder-item a {
-        display: flex;
-        align-items: center;
-        color: var(--link-color);
-        text-decoration: none;
-    }
-
-    .folder-icon {
-        font-size: 24px;
-        margin-right: 10px;
-        color: #f39c12;
-    }
-
-    .file-list {
-        margin: 30px 0;
-    }
-
-    .file-item {
-        padding: 10px 15px;
-        margin: 5px 0;
-        background-color: var(--section-bg);
-        border-radius: 4px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .file-item a {
-        color: var(--link-color);
-        text-decoration: none;
-    }
-
-    .file-item a:hover {
-        text-decoration: underline;
-    }
-
-    .file-icon {
-        margin-right: 10px;
-        width: 20px;
-        text-align: center;
-    }
-
-    .download-btn {
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 3px;
-        cursor: pointer;
-    }
-
-    .download-all {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #2196F3;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: bold;
-        margin: 0 10px;
-    }
-
-    .download-all:hover {
-        background-color: #0b7dda;
-    }
-
-    .download-folder {
-        display: inline-block;
-        padding: 8px 15px;
-        background-color: #9c27b0;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: bold;
-        margin: 5px;
-        font-size: 0.9em;
-    }
-
-    .download-folder:hover {
-        background-color: #7b1fa2;
-    }
-
-    .theme-toggle {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--section-bg);
-        border: none;
-        padding: 8px 12px;
-        border-radius: 20px;
-        cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        display: flex;
-        align-items: center;
-    }
-
-    .files-count {
-        color: var(--footer-color);
-        font-size: 0.9em;
-        text-align: center;
-        margin-top: 5px;
-    }
-</style>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<button class="theme-toggle" onclick="toggleTheme()">
-    <i class="fas fa-moon"></i> Тёмная тема
-</button>
-
-<h1>Файлы для скачивания</h1>
-
-{% assign current_path = page.url | remove: '/files.html' | remove: '/' %}
-{% if current_path == '' %}
-    {% assign current_path = 'files' %}
-{% endif %}
-
-<div class="breadcrumbs">
-    <a href="/files.html">Главная</a>
-    {% assign path_parts = current_path | split: '/' %}
-    {% assign accumulated_path = '' %}
-    {% for part in path_parts %}
-        {% if part != 'files' and part != '' %}
-            {% assign accumulated_path = accumulated_path | append: '/' | append: part %}
-            / <a href="/files.html{{ accumulated_path }}">{{ part }}</a>
-        {% endif %}
-    {% endfor %}
-</div>
-
-<div class="file-actions">
-    <a href="/{{ current_path }}/all_files.zip" class="download-all" id="downloadAll">
-        <i class="fas fa-file-archive"></i> Скачать все (ZIP)
-    </a>
-    <div class="files-count">
-        {% assign all_files = site.static_files | where_exp: "file", "file.path contains current_path" %}
-        {% assign folder_count = 0 %}
-        {% for file in all_files %}
-            {% if file.path contains '/' and file.path != current_path %}
-                {% assign folder_name = file.path | remove: current_path | split: '/' | first %}
-                {% assign folder_count = folder_count | plus: 1 %}
-            {% endif %}
-        {% endfor %}
-        Папок: {{ folder_count | divided_by: 2 }}, Файлов: {{ all_files.size | minus: folder_count }}
-    </div>
-</div>
-
-{% assign folders = "" | split: "" %}
-{% assign files = "" | split: "" %}
-
-{% for file in site.static_files %}
-    {% if file.path contains current_path %}
-        {% assign relative_path = file.path | remove_first: current_path | remove_first: '/' %}
-        {% if relative_path contains '/' %}
-            {% assign folder_name = relative_path | split: '/' | first %}
-            {% unless folders contains folder_name %}
-                {% assign folders = folders | push: folder_name %}
-            {% endunless %}
-        {% else %}
-            {% assign files = files | push: file %}
-        {% endif %}
-    {% endif %}
-{% endfor %}
-
-{% if folders.size > 0 %}
-<div class="folder-list">
-    {% for folder in folders %}
-        <div class="folder-item">
-            <a href="/files.html/{{ current_path }}/{{ folder }}">
-                <i class="fas fa-folder folder-icon"></i>
-                <div>
-                    <strong>{{ folder }}</strong>
-                    <div style="font-size: 0.8em; color: var(--footer-color);">
-                        {% assign folder_files = site.static_files | where_exp: "file", "file.path contains folder" | size %}
-                        {{ folder_files }} файлов
-                    </div>
-                </div>
-            </a>
-            <div style="text-align: right; margin-top: 5px;">
-                <a href="/{{ current_path }}/{{ folder }}/all_files.zip" class="download-folder">
-                    <i class="fas fa-download"></i> Скачать папку
-                </a>
-            </div>
-        </div>
-    {% endfor %}
-</div>
-{% endif %}
-
-<div class="file-list">
-    {% assign sorted_files = files | sort: 'name' %}
-    {% for file in sorted_files %}
-        <div class="file-item">
-            <div>
-                {% if file.extname == '.pdf' %}
-                    <i class="fas fa-file-pdf file-icon" style="color: #e74c3c;"></i>
-                {% elsif file.extname == '.zip' or file.extname == '.rar' %}
-                    <i class="fas fa-file-archive file-icon" style="color: #f39c12;"></i>
-                {% elsif file.extname == '.doc' or file.extname == '.docx' %}
-                    <i class="fas fa-file-word file-icon" style="color: #3498db;"></i>
-                {% elsif file.extname == '.xls' or file.extname == '.xlsx' %}
-                    <i class="fas fa-file-excel file-icon" style="color: #2ecc71;"></i>
-                {% else %}
-                    <i class="fas fa-file file-icon"></i>
-                {% endif %}
-                <a href="{{ file.path }}">{{ file.name }}</a>
-                <span style="color: var(--footer-color); font-size: 0.8em; margin-left: 5px;">
-                    ({{ file.size | divided_by: 1024 | round }} KB)
-                </span>
-            </div>
-            <button class="download-btn" onclick="window.location.href='{{ file.path }}'">
-                <i class="fas fa-download"></i> Скачать
-            </button>
-        </div>
-    {% endfor %}
-</div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Файлы для скачивания</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; background: #f9f9f9; }
+    ul { list-style-type: none; padding-left: 1em; }
+    li { margin: 4px 0; }
+    .folder { font-weight: bold; }
+    .zip-link { font-weight: normal; font-size: 0.9em; margin-left: 8px; }
+  </style>
+</head>
+<body>
+  <h1>📁 Доступные файлы</h1>
+  <div id="tree">Загрузка...</div>
+  <p><a href="https://github.com/glgqqe/glgqqe.github.io/archive/refs/heads/main.zip" download>⬇️ Скачать весь сайт (ZIP)</a></p>
 
 <script>
-    // Проверяем сохранённую тему
-    if (localStorage.getItem('darkMode') === 'enabled') {
-        document.body.classList.add('dark-mode');
-        updateThemeButton();
-    }
+const user = 'glgqqe';
+const repo = 'glgqqe.github.io';
+const branch = 'main';
+const basePath = 'files';
+const zipBasePath = 'zips';
+const treeContainer = document.getElementById('tree');
 
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-        if (document.body.classList.contains('dark-mode')) {
-            localStorage.setItem('darkMode', 'enabled');
-        } else {
-            localStorage.setItem('darkMode', 'disabled');
-        }
-        updateThemeButton();
+function buildTree(paths) {
+  const root = {};
+  for (const path of paths) {
+    const parts = path.split('/');
+    let current = root;
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      if (!current[part]) current[part] = {};
+      current = current[part];
     }
+  }
+  return root;
+}
 
-    function updateThemeButton() {
-        const button = document.querySelector('.theme-toggle');
-        if (document.body.classList.contains('dark-mode')) {
-            button.innerHTML = '<i class="fas fa-sun"></i> Светлая тема';
-        } else {
-            button.innerHTML = '<i class="fas fa-moon"></i> Тёмная тема';
-        }
+function renderTree(tree, prefix = '') {
+  let html = '<ul>';
+  for (const key of Object.keys(tree).sort()) {
+    const fullPath = prefix ? `${prefix}/${key}` : key;
+    if (Object.keys(tree[key]).length > 0) {
+      const zipLink = `<a class="zip-link" href="${zipBasePath}/${fullPath}.zip" download>[ZIP]</a>`;
+      html += `<li class="folder">📁 ${key} ${zipLink}${renderTree(tree[key], fullPath)}</li>`;
+    } else {
+      const url = `${basePath}/${fullPath}`;
+      html += `<li>📄 <a href="${url}" download>${key}</a></li>`;
     }
+  }
+  html += '</ul>';
+  return html;
+}
 
-    // Проверяем доступность архивов
-    document.querySelectorAll('[href$="all_files.zip"]').forEach(link => {
-        link.addEventListener('click', function(e) {
-            fetch(this.href)
-                .then(response => {
-                    if (!response.ok) {
-                        e.preventDefault();
-                        alert('ZIP-архив не найден. Пожалуйста, создайте архив вручную или настройте автоматическое создание через GitHub Actions.');
-                    }
-                })
-                .catch(() => {
-                    e.preventDefault();
-                    alert('ZIP-архив не найден. Пожалуйста, создайте архив вручную или настройте автоматическое создание через GitHub Actions.');
-                });
-        });
-    });
+async function fetchFileTree() {
+  const res = await fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`);
+  const data = await res.json();
+  const filePaths = data.tree
+    .filter(f => f.type === 'blob' && f.path.startsWith(basePath + '/'))
+    .map(f => f.path.substring(basePath.length + 1));
+  const tree = buildTree(filePaths);
+  treeContainer.innerHTML = renderTree(tree);
+}
+
+fetchFileTree();
 </script>
+</body>
+</html>
