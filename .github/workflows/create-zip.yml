@@ -1,4 +1,4 @@
-name: Create ZIP Archive
+name: Create ZIP Archives
 
 on:
   push:
@@ -7,26 +7,50 @@ on:
   workflow_dispatch:
 
 jobs:
-  create-zip:
+  create-zips:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     
-    - name: Create ZIP archive
+    - name: Find all folders
+      id: find-folders
       run: |
         cd files
-        zip -r ../all_files.zip *
+        # Находим все подпапки
+        find . -type d | sed 's|^\./||' > ../folders.txt
+        echo "::set-output name=folders::$(cat ../folders.txt | jq -R -s -c 'split("\n")[:-1]')"
         
-    - name: Upload ZIP file
-      uses: actions/upload-artifact@v3
-      with:
-        name: all_files.zip
-        path: all_files.zip
+    - name: Create ZIP archives
+      run: |
+        # Создаём основной архив
+        cd files
+        zip -r ../all_files.zip .
         
-    - name: Commit and push ZIP
+        # Создаём архивы для каждой подпапки
+        while IFS= read -r folder; do
+          if [ -n "$folder" ]; then
+            mkdir -p "../zips/$folder"
+            cd "$folder"
+            zip -r "../../zips/$folder/all_files.zip" .
+            cd ../..
+          fi
+        done < ../folders.txt
+        
+    - name: Move ZIP files to correct locations
+      run: |
+        # Основной архив
+        mv all_files.zip files/
+        
+        # Архивы подпапок
+        mkdir -p files/zips
+        mv zips/* files/
+        rm -rf zips
+        
+    - name: Commit and push changes
       run: |
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
-        git add all_files.zip
-        git commit -m "Update ZIP archive" || echo "No changes to commit"
+        git add files/all_files.zip
+        git add files/**/all_files.zip
+        git commit -m "Update ZIP archives" || echo "No changes to commit"
         git push
