@@ -92,12 +92,15 @@
     const basePath = 'files';
     const zipBasePath = 'zips';
 
-    // Маппинг внешних ZIP-ссылок (например, Google Drive)
+    // Внешние ZIP-ссылки
     const externalZipLinks = {
       "bftv": "https://drive.google.com/file/d/1VmgPHeObfoV0EBH8VfoO3fzSlwm70ua8/view?usp=sharing"
       "apfs": "https://drive.google.com/file/d/1lVDyocXUdG0wZP_Y1_A7RB-0sJ6YWxhR/view?usp=drive_link"
       "dora": "https://drive.google.com/file/d/1vNqAey-kVSchAZQI3CrNnJK7wQC5srpK/view?usp=drive_link"
     };
+
+    // ⚠️ Вставь свой токен для локального теста (НЕЛЬЗЯ оставлять в репозитории)
+    const GITHUB_TOKEN = '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';
 
     const treeContainer = document.getElementById('tree');
 
@@ -143,7 +146,12 @@
 
     async function fetchFileTree() {
       try {
-        const res = await fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`);
+        const res = await fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`, {
+          headers: {
+            Authorization: `Bearer ${GITHUB_TOKEN}`,
+            Accept: 'application/vnd.github+json'
+          }
+        });
 
         if (!res.ok) {
           throw new Error(`GitHub API error: ${res.status}`);
@@ -164,10 +172,8 @@
         enableFolderToggle();
       } catch (error) {
         console.error(error);
-        treeContainer.innerHTML = `<p class="error">❌ Не удалось загрузить список файлов. Возможные причины:<br>
-          – Репозиторий приватный<br>
-          – Превышен лимит GitHub API (60 запросов/час без авторизации)<br>
-          – Ветка "${branch}" или путь "${basePath}/" не существуют</p>`;
+        treeContainer.innerHTML = `<p class="error">❌ Ошибка: ${error.message}<br>
+        Проверь токен или API GitHub</p>`;
       }
     }
 
