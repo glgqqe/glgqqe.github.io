@@ -7,60 +7,49 @@
     :root {
       color-scheme: dark;
     }
-
     body {
       font-family: sans-serif;
       padding: 1em;
       background: #121212;
       color: #e0e0e0;
     }
-
     a {
       color: #80d0ff;
       text-decoration: none;
     }
-
     a:hover {
       text-decoration: underline;
     }
-
     ul {
       list-style-type: none;
       padding-left: 1.5em;
       margin: 0;
     }
-
     li {
       margin: 4px 0;
       line-height: 1.6;
     }
-
     .folder {
       font-weight: bold;
       cursor: pointer;
     }
-
     .collapsed > ul {
       display: none;
     }
-
     .toggle {
       user-select: none;
       margin-right: 6px;
       font-size: 14px;
     }
-
     .zip-link {
       font-weight: normal;
       font-size: 0.85em;
       margin-left: 8px;
       opacity: 0.7;
     }
-
     .zip-link:hover {
       opacity: 1;
     }
-
     .download-all {
       margin-top: 20px;
       display: inline-block;
@@ -70,11 +59,9 @@
       text-decoration: none;
       border-radius: 6px;
     }
-
     h1 {
       margin-bottom: 0.5em;
     }
-
     .error {
       color: #ff6f6f;
       font-weight: bold;
@@ -86,114 +73,72 @@
   <div id="tree">Загрузка...</div>
 
   <script>
-    const user = 'glgqqe';
-    const repo = 'glgqqe.github.io';
-    const branch = 'main';
-    const basePath = 'files';
-    const zipBasePath = 'zips';
+    // Пусть здесь путь к JSON с предсгенерированной структурой
+    // Пример: https://glgqqe.github.io/files/tree.json
+    const treeJsonPath = 'files/tree.json';
 
-    // Внешние ZIP-ссылки
+    // Папка с файлами
+    const basePath = 'files';
+
+    // Внешние ссылки на ZIP-папки (например, Google Drive)
     const externalZipLinks = {
       "bftv": "https://drive.google.com/file/d/1VmgPHeObfoV0EBH8VfoO3fzSlwm70ua8/view?usp=sharing"
       "apfs": "https://drive.google.com/file/d/1lVDyocXUdG0wZP_Y1_A7RB-0sJ6YWxhR/view?usp=drive_link"
       "dora": "https://drive.google.com/file/d/1vNqAey-kVSchAZQI3CrNnJK7wQC5srpK/view?usp=drive_link"
     };
 
-    // ⚠️ Вставь свой токен для локального теста (НЕЛЬЗЯ оставлять в репозитории)
-    const GITHUB_TOKEN = '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';
-
     const treeContainer = document.getElementById('tree');
 
-    function buildTree(paths) {
-      const root = {};
-      for (const path of paths) {
-        const parts = path.split('/');
-        let current = root;
-        for (let i = 0; i < parts.length; i++) {
-          const part = parts[i];
-          if (!current[part]) current[part] = {};
-          current = current[part];
-        }
-      }
-      return root;
-    }
-
-    function renderTree(tree, prefix = '') {
+    // Функция для построения HTML из дерева (формат tree.json ниже)
+    function renderTree(node, prefix = '') {
       let html = '<ul>';
-      for (const key of Object.keys(tree).sort()) {
-        const fullPath = prefix ? `${prefix}/${key}` : key;
-        const isFolder = Object.keys(tree[key]).length > 0;
-
-        if (isFolder) {
-          const externalLink = externalZipLinks[fullPath];
-          const zipHref = externalLink || `${zipBasePath}/${fullPath}.zip`;
-          const zipLink = `<a class="zip-link" href="${zipHref}" target="_blank">[ZIP]</a>`;
-
+      node.forEach(item => {
+        const fullPath = prefix ? `${prefix}/${item.name}` : item.name;
+        if(item.type === 'folder'){
+          const zipHref = externalZipLinks[fullPath] || `files/zips/${fullPath}.zip`;
+          const zipLink = `<a class="zip-link" href="${zipHref}" target="_blank" rel="noopener">[ZIP]</a>`;
           html += `
             <li class="folder collapsed">
-              <span class="toggle">▶</span><span class="folder-name">${key}</span> ${zipLink}
-              ${renderTree(tree[key], fullPath)}
+              <span class="toggle">▶</span><span class="folder-name">${item.name}</span> ${zipLink}
+              ${renderTree(item.children, fullPath)}
             </li>
           `;
-        } else {
+        } else if(item.type === 'file'){
           const url = `${basePath}/${fullPath}`;
-          html += `<li>📄 <a href="${url}" download>${key}</a></li>`;
+          html += `<li>📄 <a href="${url}" download>${item.name}</a></li>`;
         }
-      }
+      });
       html += '</ul>';
       return html;
     }
 
-    async function fetchFileTree() {
-      try {
-        const res = await fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`, {
-          headers: {
-            Authorization: `Bearer ${GITHUB_TOKEN}`,
-            Accept: 'application/vnd.github+json'
-          }
-        });
-
-        if (!res.ok) {
-          throw new Error(`GitHub API error: ${res.status}`);
-        }
-
-        const data = await res.json();
-
-        if (!data.tree) {
-          throw new Error("Некорректный ответ API");
-        }
-
-        const filePaths = data.tree
-          .filter(f => f.type === 'blob' && f.path.startsWith(basePath + '/'))
-          .map(f => f.path.substring(basePath.length + 1));
-
-        const tree = buildTree(filePaths);
-        treeContainer.innerHTML = renderTree(tree);
-        enableFolderToggle();
-      } catch (error) {
-        console.error(error);
-        treeContainer.innerHTML = `<p class="error">❌ Ошибка: ${error.message}<br>
-        Проверь токен или API GitHub</p>`;
-      }
-    }
-
-    function enableFolderToggle() {
+    function enableFolderToggle(){
       const folders = document.querySelectorAll('.folder');
       folders.forEach(folder => {
         const toggle = folder.querySelector('.toggle');
         const name = folder.querySelector('.folder-name');
-
         const toggleFunc = () => {
           folder.classList.toggle('collapsed');
           toggle.textContent = folder.classList.contains('collapsed') ? '▶' : '▼';
         };
-
         toggle.addEventListener('click', toggleFunc);
         name.addEventListener('click', toggleFunc);
       });
     }
 
-    fetchFileTree();
+    async function loadTree() {
+      try {
+        const res = await fetch(treeJsonPath);
+        if(!res.ok) throw new Error(`Не удалось загрузить ${treeJsonPath}: ${res.status}`);
+        const data = await res.json();
+        treeContainer.innerHTML = renderTree(data);
+        enableFolderToggle();
+      } catch(err){
+        treeContainer.innerHTML = `<p class="error">Ошибка загрузки структуры файлов:<br>${err.message}</p>`;
+      }
+    }
+
+    loadTree();
   </script>
 </body>
 </html>
