@@ -47,11 +47,12 @@
     .toggle {
       user-select: none;
       margin-right: 6px;
+      font-size: 14px;
     }
 
     .zip-link {
       font-weight: normal;
-      font-size: 0.9em;
+      font-size: 0.85em;
       margin-left: 8px;
       opacity: 0.7;
     }
@@ -78,7 +79,11 @@
 <body>
   <h1>📁 Доступные файлы</h1>
   <div id="tree">Загрузка...</div>
-  <p><a class="download-all" href="https://github.com/glgqqe/glgqqe.github.io/archive/refs/heads/main.zip" download>⬇️ Скачать всё архивом</a></p>
+  <p>
+    <a class="download-all" href="https://github.com/glgqqe/glgqqe.github.io/archive/refs/heads/main.zip" download>
+      ⬇️ Скачать весь сайт (ZIP)
+    </a>
+  </p>
 
   <script>
     const user = 'glgqqe';
@@ -86,6 +91,12 @@
     const branch = 'main';
     const basePath = 'files';
     const zipBasePath = 'zips';
+
+    // Добавь сюда папку: ссылка_на_google_drive
+    const externalZipLinks = {
+      "bftv": "https://drive.google.com/file/d/1VmgPHeObfoV0EBH8VfoO3fzSlwm70ua8/view?usp=sharing"
+    };
+
     const treeContainer = document.getElementById('tree');
 
     function buildTree(paths) {
@@ -109,10 +120,15 @@
         const isFolder = Object.keys(tree[key]).length > 0;
 
         if (isFolder) {
-          const zipLink = `<a class="zip-link" href="${zipBasePath}/${fullPath}.zip" download>[ZIP]</a>`;
+          const externalLink = externalZipLinks[fullPath];
+          const zipHref = externalLink
+            ? externalLink
+            : `${zipBasePath}/${fullPath}.zip`;
+          const zipLink = `<a class="zip-link" href="${zipHref}" target="_blank">[ZIP]</a>`;
+
           html += `
             <li class="folder collapsed">
-              <span class="toggle">▶</span>${key} ${zipLink}
+              <span class="toggle">▶</span><span class="folder-name">${key}</span> ${zipLink}
               ${renderTree(tree[key], fullPath)}
             </li>
           `;
@@ -137,17 +153,18 @@
     }
 
     function enableFolderToggle() {
-      document.querySelectorAll('.folder').forEach(folder => {
+      const folders = document.querySelectorAll('.folder');
+      folders.forEach(folder => {
         const toggle = folder.querySelector('.toggle');
-        toggle.addEventListener('click', () => {
+        const name = folder.querySelector('.folder-name');
+
+        const toggleFunc = () => {
           folder.classList.toggle('collapsed');
           toggle.textContent = folder.classList.contains('collapsed') ? '▶' : '▼';
-        });
-        // Optional: clicking folder name also toggles
-        folder.childNodes[1].addEventListener('click', () => {
-          folder.classList.toggle('collapsed');
-          toggle.textContent = folder.classList.contains('collapsed') ? '▶' : '▼';
-        });
+        };
+
+        toggle.addEventListener('click', toggleFunc);
+        name.addEventListener('click', toggleFunc);
       });
     }
 
