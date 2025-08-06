@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Файлы для скачивания</title>
+  <title>Storage</title>
   <style>
     :root {
       color-scheme: dark;
@@ -74,16 +74,16 @@
     h1 {
       margin-bottom: 0.5em;
     }
+
+    .error {
+      color: #ff6f6f;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <h1>📁 Доступные файлы</h1>
+  <h1>📁 Файлы</h1>
   <div id="tree">Загрузка...</div>
-  <p>
-    <a class="download-all" href="https://github.com/glgqqe/glgqqe.github.io/archive/refs/heads/main.zip" download>
-      ⬇️ Скачать весь сайт (ZIP)
-    </a>
-  </p>
 
   <script>
     const user = 'glgqqe';
@@ -92,11 +92,11 @@
     const basePath = 'files';
     const zipBasePath = 'zips';
 
-    // Добавь сюда папку: ссылка_на_google_drive
+    // Маппинг внешних ZIP-ссылок (например, Google Drive)
     const externalZipLinks = {
       "bftv": "https://drive.google.com/file/d/1VmgPHeObfoV0EBH8VfoO3fzSlwm70ua8/view?usp=sharing"
-      "apfs": "https://drive.google.com/file/d/1lVDyocXUdG0wZP_Y1_A7RB-0sJ6YWxhR/view?usp=sharing"
-      "dora": "https://drive.google.com/file/d/1vNqAey-kVSchAZQI3CrNnJK7wQC5srpK/view?usp=sharing"
+      "apfs": "https://drive.google.com/file/d/1lVDyocXUdG0wZP_Y1_A7RB-0sJ6YWxhR/view?usp=drive_link"
+      "dora": "https://drive.google.com/file/d/1vNqAey-kVSchAZQI3CrNnJK7wQC5srpK/view?usp=drive_link"
     };
 
     const treeContainer = document.getElementById('tree');
@@ -123,9 +123,7 @@
 
         if (isFolder) {
           const externalLink = externalZipLinks[fullPath];
-          const zipHref = externalLink
-            ? externalLink
-            : `${zipBasePath}/${fullPath}.zip`;
+          const zipHref = externalLink || `${zipBasePath}/${fullPath}.zip`;
           const zipLink = `<a class="zip-link" href="${zipHref}" target="_blank">[ZIP]</a>`;
 
           html += `
@@ -144,14 +142,33 @@
     }
 
     async function fetchFileTree() {
-      const res = await fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`);
-      const data = await res.json();
-      const filePaths = data.tree
-        .filter(f => f.type === 'blob' && f.path.startsWith(basePath + '/'))
-        .map(f => f.path.substring(basePath.length + 1));
-      const tree = buildTree(filePaths);
-      treeContainer.innerHTML = renderTree(tree);
-      enableFolderToggle();
+      try {
+        const res = await fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`);
+
+        if (!res.ok) {
+          throw new Error(`GitHub API error: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        if (!data.tree) {
+          throw new Error("Некорректный ответ API");
+        }
+
+        const filePaths = data.tree
+          .filter(f => f.type === 'blob' && f.path.startsWith(basePath + '/'))
+          .map(f => f.path.substring(basePath.length + 1));
+
+        const tree = buildTree(filePaths);
+        treeContainer.innerHTML = renderTree(tree);
+        enableFolderToggle();
+      } catch (error) {
+        console.error(error);
+        treeContainer.innerHTML = `<p class="error">❌ Не удалось загрузить список файлов. Возможные причины:<br>
+          – Репозиторий приватный<br>
+          – Превышен лимит GitHub API (60 запросов/час без авторизации)<br>
+          – Ветка "${branch}" или путь "${basePath}/" не существуют</p>`;
+      }
     }
 
     function enableFolderToggle() {
