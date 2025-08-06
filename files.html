@@ -4,67 +4,154 @@
   <meta charset="UTF-8" />
   <title>Файлы для скачивания</title>
   <style>
-    body { font-family: sans-serif; padding: 1em; background: #f9f9f9; }
-    ul { list-style-type: none; padding-left: 1em; }
-    li { margin: 4px 0; }
-    .folder { font-weight: bold; }
-    .zip-link { font-weight: normal; font-size: 0.9em; margin-left: 8px; }
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      font-family: sans-serif;
+      padding: 1em;
+      background: #121212;
+      color: #e0e0e0;
+    }
+
+    a {
+      color: #80d0ff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 1.5em;
+      margin: 0;
+    }
+
+    li {
+      margin: 4px 0;
+      line-height: 1.6;
+    }
+
+    .folder {
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .collapsed > ul {
+      display: none;
+    }
+
+    .toggle {
+      user-select: none;
+      margin-right: 6px;
+    }
+
+    .zip-link {
+      font-weight: normal;
+      font-size: 0.9em;
+      margin-left: 8px;
+      opacity: 0.7;
+    }
+
+    .zip-link:hover {
+      opacity: 1;
+    }
+
+    .download-all {
+      margin-top: 20px;
+      display: inline-block;
+      padding: 10px 15px;
+      background: #2a72bb;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    h1 {
+      margin-bottom: 0.5em;
+    }
   </style>
 </head>
 <body>
   <h1>📁 Доступные файлы</h1>
   <div id="tree">Загрузка...</div>
-  <p><a href="https://github.com/glgqqe/glgqqe.github.io/archive/refs/heads/main.zip" download>⬇️ Скачать весь сайт (ZIP)</a></p>
+  <p><a class="download-all" href="https://github.com/glgqqe/glgqqe.github.io/archive/refs/heads/main.zip" download>⬇️ Скачать всё архивом</a></p>
 
-<script>
-const user = 'glgqqe';
-const repo = 'glgqqe.github.io';
-const branch = 'main';
-const basePath = 'files';
-const zipBasePath = 'zips';
-const treeContainer = document.getElementById('tree');
+  <script>
+    const user = 'glgqqe';
+    const repo = 'glgqqe.github.io';
+    const branch = 'main';
+    const basePath = 'files';
+    const zipBasePath = 'zips';
+    const treeContainer = document.getElementById('tree');
 
-function buildTree(paths) {
-  const root = {};
-  for (const path of paths) {
-    const parts = path.split('/');
-    let current = root;
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i];
-      if (!current[part]) current[part] = {};
-      current = current[part];
+    function buildTree(paths) {
+      const root = {};
+      for (const path of paths) {
+        const parts = path.split('/');
+        let current = root;
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i];
+          if (!current[part]) current[part] = {};
+          current = current[part];
+        }
+      }
+      return root;
     }
-  }
-  return root;
-}
 
-function renderTree(tree, prefix = '') {
-  let html = '<ul>';
-  for (const key of Object.keys(tree).sort()) {
-    const fullPath = prefix ? `${prefix}/${key}` : key;
-    if (Object.keys(tree[key]).length > 0) {
-      const zipLink = `<a class="zip-link" href="${zipBasePath}/${fullPath}.zip" download>[ZIP]</a>`;
-      html += `<li class="folder">📁 ${key} ${zipLink}${renderTree(tree[key], fullPath)}</li>`;
-    } else {
-      const url = `${basePath}/${fullPath}`;
-      html += `<li>📄 <a href="${url}" download>${key}</a></li>`;
+    function renderTree(tree, prefix = '') {
+      let html = '<ul>';
+      for (const key of Object.keys(tree).sort()) {
+        const fullPath = prefix ? `${prefix}/${key}` : key;
+        const isFolder = Object.keys(tree[key]).length > 0;
+
+        if (isFolder) {
+          const zipLink = `<a class="zip-link" href="${zipBasePath}/${fullPath}.zip" download>[ZIP]</a>`;
+          html += `
+            <li class="folder collapsed">
+              <span class="toggle">▶</span>${key} ${zipLink}
+              ${renderTree(tree[key], fullPath)}
+            </li>
+          `;
+        } else {
+          const url = `${basePath}/${fullPath}`;
+          html += `<li>📄 <a href="${url}" download>${key}</a></li>`;
+        }
+      }
+      html += '</ul>';
+      return html;
     }
-  }
-  html += '</ul>';
-  return html;
-}
 
-async function fetchFileTree() {
-  const res = await fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`);
-  const data = await res.json();
-  const filePaths = data.tree
-    .filter(f => f.type === 'blob' && f.path.startsWith(basePath + '/'))
-    .map(f => f.path.substring(basePath.length + 1));
-  const tree = buildTree(filePaths);
-  treeContainer.innerHTML = renderTree(tree);
-}
+    async function fetchFileTree() {
+      const res = await fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`);
+      const data = await res.json();
+      const filePaths = data.tree
+        .filter(f => f.type === 'blob' && f.path.startsWith(basePath + '/'))
+        .map(f => f.path.substring(basePath.length + 1));
+      const tree = buildTree(filePaths);
+      treeContainer.innerHTML = renderTree(tree);
+      enableFolderToggle();
+    }
 
-fetchFileTree();
-</script>
+    function enableFolderToggle() {
+      document.querySelectorAll('.folder').forEach(folder => {
+        const toggle = folder.querySelector('.toggle');
+        toggle.addEventListener('click', () => {
+          folder.classList.toggle('collapsed');
+          toggle.textContent = folder.classList.contains('collapsed') ? '▶' : '▼';
+        });
+        // Optional: clicking folder name also toggles
+        folder.childNodes[1].addEventListener('click', () => {
+          folder.classList.toggle('collapsed');
+          toggle.textContent = folder.classList.contains('collapsed') ? '▶' : '▼';
+        });
+      });
+    }
+
+    fetchFileTree();
+  </script>
 </body>
 </html>
