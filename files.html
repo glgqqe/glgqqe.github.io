@@ -37,6 +37,12 @@ title: Файлы для скачивания
     h1 {
         color: var(--header-color);
         text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .file-actions {
+        text-align: center;
+        margin-bottom: 30px;
     }
 
     .file-list {
@@ -76,16 +82,14 @@ title: Файлы для скачивания
     }
 
     .download-all {
-        display: block;
-        width: 200px;
-        margin: 20px auto;
-        padding: 10px 15px;
+        display: inline-block;
+        padding: 10px 20px;
         background-color: #2196F3;
         color: white;
-        text-align: center;
         text-decoration: none;
         border-radius: 4px;
         font-weight: bold;
+        margin: 0 10px;
     }
 
     .download-all:hover {
@@ -105,6 +109,13 @@ title: Файлы для скачивания
         display: flex;
         align-items: center;
     }
+
+    .files-count {
+        color: var(--footer-color);
+        font-size: 0.9em;
+        text-align: center;
+        margin-top: 5px;
+    }
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -114,6 +125,16 @@ title: Файлы для скачивания
 </button>
 
 <h1>Файлы для скачивания</h1>
+
+<div class="file-actions">
+    <a href="/files/all_files.zip" class="download-all" id="downloadAll">
+        <i class="fas fa-file-archive"></i> Скачать все файлы (ZIP)
+    </a>
+    <div class="files-count">
+        {% assign file_count = site.static_files | where_exp: "file", "file.path contains '/files/'" | size %}
+        Всего файлов: {{ file_count }}
+    </div>
+</div>
 
 <div class="file-list">
     {% assign sorted_files = site.static_files | sort: 'name' %}
@@ -133,6 +154,9 @@ title: Файлы для скачивания
                         <i class="fas fa-file file-icon"></i>
                     {% endif %}
                     <a href="{{ file.path }}">{{ file.name }}</a>
+                    <span style="color: var(--footer-color); font-size: 0.8em; margin-left: 5px;">
+                        ({{ file.size | divided_by: 1024 | round }} KB)
+                    </span>
                 </div>
                 <button class="download-btn" onclick="window.location.href='{{ file.path }}'">
                     <i class="fas fa-download"></i> Скачать
@@ -141,10 +165,6 @@ title: Файлы для скачивания
         {% endif %}
     {% endfor %}
 </div>
-
-<a href="#" class="download-all" id="downloadAll">
-    <i class="fas fa-download"></i> Скачать все файлы
-</a>
 
 <script>
     // Проверяем сохранённую тему
@@ -172,17 +192,18 @@ title: Файлы для скачивания
         }
     }
 
-    // Скачать все файлы
+    // Проверяем доступность архива
     document.getElementById('downloadAll').addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        {% assign zip_files = site.static_files | where_exp: "file", "file.path contains '/files/'" %}
-        {% if zip_files.size > 0 %}
-            // Если есть файлы, скачиваем первый ZIP (или создаём ссылку на архив)
-            // В реальной реализации нужно создать ZIP архив со всеми файлами
-            alert('В реальной реализации здесь будет скачивание ZIP-архива со всеми файлами.\nСейчас можно скачать файлы по отдельности.');
-        {% else %}
-            alert('Нет файлов для скачивания');
-        {% endif %}
+        fetch('/files/all_files.zip')
+            .then(response => {
+                if (!response.ok) {
+                    e.preventDefault();
+                    alert('ZIP-архив не найден. Пожалуйста, создайте архив вручную или настройте автоматическое создание через GitHub Actions.');
+                }
+            })
+            .catch(() => {
+                e.preventDefault();
+                alert('ZIP-архив не найден. Пожалуйста, создайте архив вручную или настройте автоматическое создание через GitHub Actions.');
+            });
     });
 </script>
