@@ -1,3 +1,0 @@
-goida goida zov
-
-# zov
