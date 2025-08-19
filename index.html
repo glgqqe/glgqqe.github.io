@@ -26,13 +26,12 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       padding: 40px 20px;
-      max-width: 800px;
+      max-width: 1200px;
       margin: auto;
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     header {
-      margin-bottom: 60px;
+      margin-bottom: 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -48,8 +47,15 @@
       color: var(--subtext-color);
     }
 
+    /* 🔥 сетка */
+    .sections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+      grid-auto-rows: minmax(100px, auto);
+    }
+
     section {
-      margin-bottom: 50px;
       opacity: 0;
       transform: translateY(20px);
       animation: fadeInUp 0.6s forwards;
@@ -58,10 +64,6 @@
       padding: 20px;
       transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     }
-
-    section:nth-of-type(2) { animation-delay: 0.1s; }
-    section:nth-of-type(3) { animation-delay: 0.2s; }
-    section:nth-of-type(4) { animation-delay: 0.3s; }
 
     section:hover {
       transform: translateY(10px);
@@ -75,6 +77,11 @@
         transform: translateY(0);
       }
     }
+
+    /* 📐 управление размерами секций */
+    .wide { grid-column: span 2; }
+    .tall { grid-row: span 2; }
+    .big  { grid-column: span 2; grid-row: span 2; }
 
     h2 {
       font-size: 1.5rem;
@@ -121,6 +128,11 @@
       text-decoration: underline;
     }
 
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body>
@@ -133,38 +145,32 @@
     </div>
   </header>
 
-  <section>
-    <h2>ссылочке</h2>
-    <p>Telegram: <a href="https://t.me/glgvvv">channel</a></p>
-    <p>Discord: <a href="https://discord.gg/fmx7uFhjaW" target="_blank">server</a></p>
-    <p>Steam: <a href="https://steamcommunity.com/id/glgqqe/" target="_blank">link</a></p>
-    <p>Spotify: <a href="https://open.spotify.com/user/l49kd0b9986ihyz7fhkav7132?si=ba9b36cc8b854499" target="_blank">link</a></p>
-    <img src="images/gh_heart.jpg"
-      width="739"
-      height="160"
-      >
-  </section>
+  <!-- 🔥 grid с управляемыми размерами -->
+  <div class="sections-grid">
+    <section>
+      <h2>ссылочке</h2>
+      <p>Telegram: <a href="https://t.me/glgvvv">channel</a></p>
+      <p>Discord: <a href="https://discord.gg/fmx7uFhjaW" target="_blank">server</a></p>
+      <p>Steam: <a href="https://steamcommunity.com/id/glgqqe/" target="_blank">link</a></p>
+      <p>Spotify: <a href="https://open.spotify.com/user/l49kd0b9986ihyz7fhkav7132?si=ba9b36cc8b854499" target="_blank">link</a></p>
+      <img src="images/gh_heart" width="739" height="160">
+    </section>
 
-  <section>
-    <h2>blockgame server (admin, not an owner)</h2>
-    <p>IP: mirumir.xyz</p>
-    <p>Map: <a href="http://map.mirumir.xyz">link</a></p>
-    <p>Wiki: <a href="https://mirumir.gitbook.io/mirumir">link</a></p>
-    <p>Discord: <a href="https://discord.gg/qwguraexUX" target="_blank">server</a></p>
-  </section>
+    <section class="wide">
+      <h2>blockgame server (admin, not an owner)</h2>
+      <p>IP: mirumir.xyz</p>
+      <p>Map: <a href="http://map.mirumir.xyz">link</a></p>
+      <p>Wiki: <a href="https://mirumir.gitbook.io/mirumir">link</a></p>
+      <p>Discord: <a href="https://discord.gg/qwguraexUX" target="_blank">server</a></p>
+    </section>
 
-  <section>
-    <img src="images/minecraft.jpg"
-      width="721"
-      height="618"
-      >
-    <img src="images/castle.jpg"
-      width="721"
-      height="618"
-      >
-    <img src="images/jopa.jpg">
-    <img src="images/morgen_server.jpg">
-  </section>
+    <section class="big">
+      <img src="images/minecraft.jpg" width="721" height="618">
+      <img src="images/castle.jpg" width="721" height="618">
+      <img src="images/jopa.jpg">
+      <img src="images/morgen_server.jpg">
+    </section>
+  </div>
     
 </body>
 </html>
