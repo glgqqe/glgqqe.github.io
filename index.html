@@ -6,15 +6,7 @@
   <title>глг типа</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg-color: #f9f9f9;
-      --text-color: #222;
-      --subtext-color: #555;
-      --border-color: #ddd;
-      --link-color: #0066cc;
-    }
-
-    body.dark {
+    body {
       --bg-color: #121212;
       --text-color: #eee;
       --subtext-color: #aaa;
@@ -73,11 +65,6 @@
 
     section:hover {
       transform: translateY(10px);
-      background-color: rgba(0, 0, 0, 0.03);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    body.dark section:hover {
       background-color: rgba(255, 255, 255, 0.05);
       box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
     }
@@ -113,12 +100,8 @@
     }
 
     .project:hover {
-      background-color: rgba(0, 0, 0, 0.04);
-      transform: translateY(-4px);
-    }
-
-    body.dark .project:hover {
       background-color: rgba(255, 255, 255, 0.05);
+      transform: translateY(-4px);
     }
 
     footer {
@@ -138,20 +121,6 @@
       text-decoration: underline;
     }
 
-    .theme-toggle {
-      background: none;
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-    }
-
-    .theme-toggle:hover {
-      background-color: var(--border-color);
-    }
   </style>
 </head>
 <body>
@@ -160,10 +129,9 @@
     <div>
       <h1>glg / глг</h1>
       <p class="subtitle">aka glgqqe, glgshka</p>
-      <p class="subtitle"> </p>
+      <p class="subtitle">    </p>
       <p class="subtitle"><span style="color:#FF0000">i</span> <span style="color:#FF8B00">u</span><span style="color:#E8FF00">s</span><span style="color:#5DFF00">e</span> <span style="color:#00FF2E">a</span><span style="color:#00FFB9">r</span><span style="color:#00B9FF">c</span><span style="color:#002EFF">h</span> <span style="color:#5D00FF">b</span><span style="color:#E800FF">t</span><span style="color:#FF008B">w</span></p>
     </div>
-    <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
   </header>
 
   <section>
@@ -181,20 +149,6 @@
     <p>Wiki: <a href="https://mirumir.gitbook.io/mirumir">link</a></p>
     <p>Discord: <a href="https://discord.gg/qwguraexUX" target="_blank">server</a></p>
   </section>
-
-  <script>
-    function toggleTheme() {
-      document.body.classList.toggle('dark');
-      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-    }
-
-    // Автозагрузка темы
-    window.addEventListener('DOMContentLoaded', () => {
-      if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark');
-      }
-    });
-  </script>
 
 </body>
 </html>
