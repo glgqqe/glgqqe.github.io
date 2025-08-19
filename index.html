@@ -47,6 +47,7 @@
       color: var(--subtext-color);
     }
 
+    /* 🔥 сетка */
     .sections-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -59,29 +60,16 @@
       transform: translateY(20px);
       animation: fadeInUp 0.6s forwards;
       background-color: transparent;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border-color); /* 👈 Добавил границу */
       border-radius: 12px;
       padding: 20px;
-      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-      cursor: grab;
-      touch-action: none; /* нужно для тач-событий */
-    }
-
-    section:active {
-      cursor: grabbing;
-    }
-
-    section.dragging {
-      opacity: 0.5;
-      transform: scale(1.05);
-      background-color: rgba(255, 255, 255, 0.05);
-      position: relative;
-      z-index: 1000;
+      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     }
 
     section:hover {
       transform: translateY(10px);
       background-color: rgba(255, 255, 255, 0.05);
+      border-color: #555; /* 👈 подсветка при наведении */
       box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
     }
 
@@ -92,6 +80,7 @@
       }
     }
 
+    /* 📐 управление размерами секций */
     .wide { grid-column: span 2; }
     .tall { grid-row: span 2; }
     .big  { grid-column: span 2; grid-row: span 2; }
@@ -101,6 +90,27 @@
       margin-bottom: 20px;
       border-bottom: 2px solid var(--border-color);
       padding-bottom: 10px;
+    }
+
+    .project {
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .project h3 {
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+
+    .project p {
+      color: var(--subtext-color);
+    }
+
+    .project:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      transform: translateY(-4px);
     }
 
     footer {
@@ -138,11 +148,11 @@
   </header>
 
   <div class="sections-grid">
-    <section draggable="true">
+    <section>
       <img src="images/gh_heart.jpg" width="350" height="320">
     </section>
     
-    <section draggable="true">
+    <section>
       <h2>ссылочке</h2>
       <p>Telegram: <a href="https://t.me/glgvvv">channel</a></p>
       <p>Discord: <a href="https://discord.gg/fmx7uFhjaW" target="_blank">server</a></p>
@@ -150,11 +160,11 @@
       <p>Spotify: <a href="https://open.spotify.com/user/l49kd0b9986ihyz7fhkav7132?si=ba9b36cc8b854499" target="_blank">link</a></p>
     </section>
 
-    <section draggable="true">
+    <section>
       <img src="images/jopa.jpg" width="350" height="320">
     </section>
 
-    <section draggable="true">
+    <section>
       <h2>blockgame server (admin, not an owner)</h2>
       <p>IP: mirumir.xyz</p>
       <p>Map: <a href="http://map.mirumir.xyz">link</a></p>
@@ -162,87 +172,14 @@
       <p>Discord: <a href="https://discord.gg/qwguraexUX" target="_blank">server</a></p>
     </section>
 
-    <section draggable="true">
+    <section>
       <img src="images/minecraft.jpg" width="350" height="320">
     </section>
 
-    <section draggable="true">
+    <section>
       <img src="images/castle.jpg" width="350" height="320">
     </section>
   </div>
-
-  <script>
-    const grid = document.querySelector(".sections-grid");
-    let draggedItem = null;
-
-    // --- drag & drop для мышки ---
-    grid.addEventListener("dragstart", e => {
-      if (e.target.tagName === "SECTION") {
-        draggedItem = e.target;
-        e.target.classList.add("dragging");
-      }
-    });
-
-    grid.addEventListener("dragend", e => {
-      if (draggedItem) {
-        draggedItem.classList.remove("dragging");
-        draggedItem = null;
-      }
-    });
-
-    grid.addEventListener("dragover", e => {
-      e.preventDefault();
-      const afterElement = getDragAfterElement(grid, e.clientY);
-      if (afterElement == null) {
-        grid.appendChild(draggedItem);
-      } else {
-        grid.insertBefore(draggedItem, afterElement);
-      }
-    });
-
-    // --- touch events для смартфонов ---
-    let touchItem = null;
-
-    grid.addEventListener("touchstart", e => {
-      const target = e.target.closest("section");
-      if (target) {
-        touchItem = target;
-        touchItem.classList.add("dragging");
-      }
-    });
-
-    grid.addEventListener("touchmove", e => {
-      if (!touchItem) return;
-      const touch = e.touches[0];
-      const afterElement = getDragAfterElement(grid, touch.clientY);
-      if (afterElement == null) {
-        grid.appendChild(touchItem);
-      } else {
-        grid.insertBefore(touchItem, afterElement);
-      }
-      e.preventDefault(); // отключает скролл при перетаскивании
-    }, { passive: false });
-
-    grid.addEventListener("touchend", () => {
-      if (touchItem) {
-        touchItem.classList.remove("dragging");
-        touchItem = null;
-      }
-    });
-
-    function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll("section:not(.dragging)")];
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
-        }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
-    }
-  </script>
-
+    
 </body>
 </html>
